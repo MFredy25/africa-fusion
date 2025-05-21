@@ -1,0 +1,63 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+export default function FormVenteEntreprise() {
+  const router = useRouter();
+
+  return (
+    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Formulaire – Vente d’Entreprise</h1>
+
+      {/* Identification vendeur */}
+      <section style={{ marginBottom: '1.5rem' }}>
+        <h2>Identification du vendeur (KYC)</h2>
+        <input placeholder="Nom complet" style={{ width: '100%', marginBottom: '0.5rem' }} /><br />
+        <input placeholder="Fonction" style={{ width: '100%', marginBottom: '0.5rem' }} /><br />
+        <input placeholder="Type d’identification" style={{ width: '100%', marginBottom: '0.5rem' }} /><br />
+        <input placeholder="Numéro d'identification" style={{ width: '100%', marginBottom: '0.5rem' }} /><br />
+        <input placeholder="Justificatif de domicile" style={{ width: '100%', marginBottom: '0.5rem' }} />
+      </section>
+
+      {/* Informations entreprise */}
+      <section style={{ marginBottom: '1.5rem' }}>
+        <h2>Informations générales sur l’entreprise</h2>
+        <textarea placeholder="Nom, secteur, description, localisation, année de création..." style={{ width: '100%', height: '80px' }} />
+      </section>
+
+      {/* Situation financière */}
+      <section style={{ marginBottom: '1.5rem' }}>
+        <h2>Situation financière détaillée</h2>
+        <textarea placeholder="Chiffre d'affaires, bénéfices, dettes, créances..." style={{ width: '100%', height: '80px' }} />
+      </section>
+
+      {/* Conditions spécifiques */}
+      <section style={{ marginBottom: '1.5rem' }}>
+        <h2>Conditions spécifiques de la vente</h2>
+        <textarea placeholder="Prix souhaité, modalités de paiement, conditions suspensives..." style={{ width: '100%', height: '80px' }} />
+      </section>
+
+      <button style={{
+        background: '#003087',
+        color: 'white',
+        padding: '0.6rem 1rem',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        marginRight: '1rem'
+      }}>
+        Enregistrer l’offre
+      </button>
+
+      <button onClick={() => router.back()} style={{
+        padding: '0.6rem 1rem',
+        border: '1px solid #ccc',
+        borderRadius: '6px',
+        background: 'white',
+        cursor: 'pointer'
+      }}>
+        Annuler
+      </button>
+    </main>
+  );
+}

@@ -1,0 +1,201 @@
+/* ───────────── Variables couleurs ───────────── */
+:root {
+  --blue:   #5079b5;
+  --orange: #e5984d;
+  --teal:   #6bb2a7;
+
+  --card-blue-bg:   #edf2fa;
+  --card-orange-bg: #fdefe4;
+  --card-teal-bg:   #e8f6f4;
+
+  --text-primary: #0f172a;
+  --text-muted:   #475569;
+}
+
+/* ───────────── Base ───────────── */
+.page {
+  font-family: "Inter", Arial, sans-serif;
+  color: var(--text-primary);
+  background: #ffffff;
+  padding-inline: 1.5rem;
+}
+
+/* ───────────── NAVBAR ───────────── */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 1.75rem;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.logoIcon {
+  width: 38px;
+  height: 38px;
+  background: var(--blue);
+  border-radius: 8px;
+}
+
+.navLinks {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ───────────── HERO ───────────── */
+.hero {
+  text-align: center;
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  line-height: 1.15;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+}
+
+/* ───────────── CTA buttons ───────────── */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+}
+
+.primaryBtn,
+.secondaryBtn,
+.tertiaryBtn {
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.primaryBtn   { background: var(--blue); }
+.secondaryBtn { background: var(--orange); }
+.tertiaryBtn  { background: var(--teal); }
+
+/* ───────────── CARDS ───────────── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1150px;
+  margin-inline: auto;
+  margin-bottom: 4rem;
+}
+
+.card {
+  border-radius: 14px;
+  padding: 2.25rem 1.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.card1 { background: var(--card-blue-bg);   }
+.card2 { background: var(--card-orange-bg); }
+.card3 { background: var(--card-teal-bg);   }
+
+.icon {
+  width: 60px;
+  height: 60px;
+}
+
+.cardTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.cardBtn {
+  margin-top: auto;
+  background: #ffffff;
+  color: var(--text-primary);
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.94rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ───────────── SERVICES PAGE ───────────── */
+.header {
+  text-align: center;
+  margin-block: 3rem 2rem;
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.header p {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+}
+
+.services {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  max-width: 1150px;
+  margin-inline: auto;
+  margin-bottom: 4rem;
+}
+
+.serviceCard {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.75rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.serviceCard:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.serviceCard h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+.serviceCard p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+/* ───────────── Responsive tweak ───────────── */
+@media (max-width: 480px) {
+  .navLinks { gap: 1rem; font-size: 0.85rem; }
+  .actions  { flex-direction: column; }
+}
