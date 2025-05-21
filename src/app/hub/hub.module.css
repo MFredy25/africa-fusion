@@ -79,9 +79,17 @@
   cursor: pointer;
 }
 
-.primaryBtn   { background: var(--blue); }
-.secondaryBtn { background: var(--orange); }
-.tertiaryBtn  { background: var(--teal); }
+.primaryBtn {
+  background: var(--blue);
+}
+
+.secondaryBtn {
+  background: var(--orange);
+}
+
+.tertiaryBtn {
+  background: var(--teal);
+}
 
 /* ───────────── CARDS ───────────── */
 .cards {
@@ -103,9 +111,17 @@
   gap: 1.6rem;
 }
 
-.card1 { background: var(--card-blue-bg);   }
-.card2 { background: var(--card-orange-bg); }
-.card3 { background: var(--card-teal-bg);   }
+.card1 {
+  background: var(--card-blue-bg);
+}
+
+.card2 {
+  background: var(--card-orange-bg);
+}
+
+.card3 {
+  background: var(--card-teal-bg);
+}
 
 .icon {
   width: 60px;
@@ -182,6 +198,12 @@
 
 /* ───────────── Responsive tweak ───────────── */
 @media (max-width: 480px) {
-  .navLinks { gap: 1rem; font-size: 0.85rem; }
-  .actions  { flex-direction: column; }
+  .navLinks {
+    gap: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
 }
