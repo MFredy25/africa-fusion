@@ -1,26 +1,16 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-
-  /* ───────────── Variables couleurs ───────────── */
-  --blue:   #5079b5;
+  --blue: #5079b5;
   --orange: #e5984d;
-  --teal:   #6bb2a7;
+  --teal: #6bb2a7;
 
-  --card-blue-bg:   #edf2fa;
+  --card-blue-bg: #edf2fa;
   --card-orange-bg: #fdefe4;
-  --card-teal-bg:   #e8f6f4;
+  --card-teal-bg: #e8f6f4;
 
   --text-primary: #0f172a;
-  --text-muted:   #475569;
+  --text-muted: #475569;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 html,
 body {
