@@ -1,74 +1,26 @@
 @import "tailwindcss";
 
-/* ───────────── Variables globales ───────────── */
 :root {
-  --blue: #5079b5;
-  --orange: #e5984d;
-  --teal: #6bb2a7;
-
-  --card-blue-bg: #edf2fa;
-  --card-orange-bg: #fdefe4;
-  --card-teal-bg: #e8f6f4;
-
-  --text-primary: #0f172a;
-  --text-muted: #475569;
-
   --background: #ffffff;
   --foreground: #171717;
+}
 
-  --gray-rgb: 0, 0, 0;
-  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
-  --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
   }
-}
-
-/* ───────────── Base styles ───────────── */
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  .logo {
-    filter: invert();
-  }
 }
