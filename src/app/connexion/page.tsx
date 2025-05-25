@@ -2,11 +2,13 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '@/lib/firebase';
 
 export default function ConnexionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/hub';
+  const redirectTo = searchParams.get('redirect') || '/home'; // 🔁 redirection modifiée
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,11 +24,15 @@ export default function ConnexionPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Simulation Google login
-    alert('Connexion via Google (simulation)');
-    localStorage.setItem('isAuth', 'true');
-    router.push(redirectTo);
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      localStorage.setItem('isAuth', 'true');
+      router.push(redirectTo);
+    } catch (error) {
+      console.error('Erreur de connexion Google:', error);
+      alert("Échec de la connexion avec Google");
+    }
   };
 
   return (

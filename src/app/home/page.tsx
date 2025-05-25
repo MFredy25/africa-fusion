@@ -2,39 +2,38 @@ import styles from "../../styles/hub.module.css";
 import Link from "next/link";
 import HubHeader from "../../components/HubHeader";
 
-export default function Hub() {
+export default function HomePage() {
   return (
     <div className={styles.page}>
       <HubHeader />
 
-      <div className={styles.containerWrapper}>
-        <section className={styles.hero}>
-          <h1>
-            Votre porte&nbsp;d’entrée vers des<br />
-            opportunités&nbsp;d’affaires inédites
-          </h1>
+      <section className={styles.hero}>
+        <h1>
+          Bienvenue sur votre plate-forme<br />
+          d'opportunités d’affaires inédites
+        </h1>
 
-          <p>
-            Explorez l’annuaire d’entreprises, participez à des opérations M&A
-            exclusives,<br />
-            ou soutenez des projets innovants grâce au crowdfunding.
-          </p>
+        <p>
+          Connectez-vous à un écosystème dynamique pour repérer, suivre
+          et soutenir des initiatives économiques à fort potentiel.
+        </p>
 
-          <div className={styles.actions}>
-            <Link href="/annuaire" className={styles.primaryBtn}>
-              Explorer l’Annuaire
-            </Link>
-            <Link href="/deals-m-a" className={styles.secondaryBtn}>
-              Découvrir les Deals
-            </Link>
-            <Link href="/crowdfunding" className={styles.tertiaryBtn}>
-              Investir en&nbsp;Crowdfunding
-            </Link>
-          </div>
-        </section>
+        <div className={styles.actions}>
+          <Link href="/annuaire" className={styles.primaryBtn}>
+            Explorer l’Annuaire
+          </Link>
+          <Link href="/deals-m-a" className={styles.secondaryBtn}>
+            Découvrir les Deals
+          </Link>
+          <Link href="/crowdfunding" className={styles.tertiaryBtn}>
+            Investir en&nbsp;Crowdfunding
+          </Link>
+        </div>
+      </section>
 
-        <section className={styles.cards}>
-          <div className={`${styles.card} ${styles.card1}`}>
+      <section className={styles.cards}>
+        <div className={`${styles.card} ${styles.card1}`}>
+          <div className={styles.cardContent}>
             <svg
               className={styles.icon}
               viewBox="0 0 24 24"
@@ -53,8 +52,10 @@ export default function Hub() {
               Voir plus
             </Link>
           </div>
+        </div>
 
-          <div className={`${styles.card} ${styles.card2}`}>
+        <div className={`${styles.card} ${styles.card2}`}>
+          <div className={styles.cardContent}>
             <svg
               className={styles.icon}
               viewBox="0 0 24 24"
@@ -70,8 +71,10 @@ export default function Hub() {
               Détails
             </Link>
           </div>
+        </div>
 
-          <div className={`${styles.card} ${styles.card3}`}>
+        <div className={`${styles.card} ${styles.card3}`}>
+          <div className={styles.cardContent}>
             <svg
               className={styles.icon}
               viewBox="0 0 24 24"
@@ -91,8 +94,8 @@ export default function Hub() {
               Participer
             </Link>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
