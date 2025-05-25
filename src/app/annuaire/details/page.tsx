@@ -1,16 +1,16 @@
-/* -------------------------------------------------------------------------- */
-/*  app/annuaire/details/page.tsx                                             */
-/*  ▸ Résout l’erreur `useSearchParams()` en supprimant la tentative          */
-/*    de pré-rendu avec Suspense.                                             */
-/*  ▸ Rendu exclusivement côté client via `dynamic()` + `ssr: false`.         */
-/* -------------------------------------------------------------------------- */
+/* ========================================================================= */
+/*  app/annuaire/details/page.tsx                                            */
+/*  ➤ Corrige la collision `dynamic` (fonction vs const)                    */
+/*  ➤ Empêche le pré-rendering pour `useSearchParams()`                    */
+/* ========================================================================= */
 
-'use client';
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic'; // ✅ pas de collision de nom
 
-/* ⛔ Pas de Suspense ni SSR – chargement pur client */
-const AnnuaireDetailsClient = dynamic(() => import('./AnnuaireDetailsClient'), {
+// ⬇️ CSR uniquement
+const AnnuaireDetailsClient = dynamicImport(() => import('./AnnuaireDetailsClient'), {
   ssr: false,
 });
 
