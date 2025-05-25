@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Company } from '@/types/company';
 
@@ -49,12 +49,9 @@ const mockCompanies: Company[] = [
 
 export default function AnnuaireDetails() {
   const searchParams = useSearchParams();
-  const [company, setCompany] = useState<Company | undefined>(undefined);
-
-  useEffect(() => {
+  const company = useMemo(() => {
     const id = searchParams.get('id');
-    const found = mockCompanies.find((c) => c.id === id);
-    setCompany(found);
+    return mockCompanies.find((c) => c.id === id);
   }, [searchParams]);
 
   if (!company) {
