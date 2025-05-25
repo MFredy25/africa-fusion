@@ -50,7 +50,7 @@ export default function AnnuaireDetails() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
-  const company = mockCompanies.find(c => c.id === id);
+  const company = mockCompanies.find((c) => c.id === id);
 
   if (!company) {
     return (
@@ -62,18 +62,57 @@ export default function AnnuaireDetails() {
   }
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '800px', margin: 'auto' }}>
+    <main
+      style={{
+        padding: '2rem',
+        fontFamily: 'sans-serif',
+        maxWidth: '800px',
+        margin: 'auto',
+      }}
+    >
       <h1 style={{ fontSize: '2rem', color: '#003087' }}>{company.name}</h1>
-      <p style={{ margin: '1rem 0', fontSize: '1rem', color: '#444' }}>{company.description}</p>
+      <p style={{ margin: '1rem 0', fontSize: '1rem', color: '#444' }}>
+        {company.description}
+      </p>
 
-      <div style={{ background: '#f4f4f4', borderRadius: '8px', padding: '1rem', marginBottom: '2rem' }}>
-        <p><strong>📂 Catégorie :</strong> {company.category}</p>
-        <p><strong>💰 Chiffre d&apos;affaires :</strong> {company.revenue}</p>
-        <p><strong>📍 Localisation :</strong> {company.location}</p>
-        <p><strong>📧 Email :</strong> <a href={`mailto:${company.email}`} style={{ color: '#003087' }}>{company.email}</a></p>
+      <div
+        style={{
+          background: '#f4f4f4',
+          borderRadius: '8px',
+          padding: '1rem',
+          marginBottom: '2rem',
+        }}
+      >
+        <p>
+          <strong>📂 Catégorie :</strong> {company.category}
+        </p>
+        <p>
+          <strong>💰 Chiffre d&apos;affaires :</strong> {company.revenue}
+        </p>
+        <p>
+          <strong>📍 Localisation :</strong> {company.location}
+        </p>
+        <p>
+          <strong>📧 Email :</strong>{' '}
+          <a
+            href={`mailto:${company.email}`}
+            style={{ color: '#003087' }}
+          >
+            {company.email}
+          </a>
+        </p>
       </div>
 
-      <button style={{ background: '#003087', color: 'white', padding: '0.6rem 1.2rem', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+      <button
+        style={{
+          background: '#003087',
+          color: 'white',
+          padding: '0.6rem 1.2rem',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: 'pointer',
+        }}
+      >
         📝 Commander une étude
       </button>
     </main>
