@@ -12,27 +12,32 @@ export default function AnnuaireDetailsClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCompany = async () => {
-      const id = searchParams.get('id');
-      if (!id) return;
+    const id = searchParams.get('id');
+    if (!id) return;
 
-      const docRef = doc(db, 'companies', id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setCompany({
-          id,
-          name: data.name,
-          rccm: data.rccm || '',
-          description: data.description,
-          category: data.category,
-          revenue: data.revenue,
-          location: data.location,
-          email: data.email,
-          createdAt: data.createdAt || null,
-        });
+    const fetchCompany = async () => {
+      try {
+        const docRef = doc(db, 'companies', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setCompany({
+            id,
+            name: data.name,
+            rccm: data.rccm || '',
+            description: data.description,
+            category: data.category,
+            revenue: data.revenue,
+            location: data.location,
+            email: data.email,
+            createdAt: data.createdAt || null,
+          });
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération de l’entreprise :', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchCompany();
