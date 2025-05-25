@@ -1,8 +1,12 @@
-import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
+// ✅ On change le nom de la constante pour éviter le conflit
+export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 
-// ✅ Chargement du composant client désactivant le SSR
-const AnnuaireDetailsClient = dynamic(
+import { Suspense } from 'react';
+import dynamicImport from 'next/dynamic';
+
+// ✅ On renomme `dynamic` en `dynamicImport` pour éviter le conflit de nom
+const AnnuaireDetailsClient = dynamicImport(
   () => import('./AnnuaireDetailsClient'),
   { ssr: false }
 );
