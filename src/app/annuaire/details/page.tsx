@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Company } from '@/types/company';
 
@@ -47,11 +47,15 @@ const mockCompanies: Company[] = [
   },
 ];
 
-function CompanyDetailsContent() {
+export default function AnnuaireDetails() {
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const [company, setCompany] = useState<Company | undefined>(undefined);
 
-  const company = mockCompanies.find((c) => c.id === id);
+  useEffect(() => {
+    const id = searchParams.get('id');
+    const found = mockCompanies.find((c) => c.id === id);
+    setCompany(found);
+  }, [searchParams]);
 
   if (!company) {
     return (
@@ -114,13 +118,5 @@ function CompanyDetailsContent() {
         📝 Commander une étude
       </button>
     </main>
-  );
-}
-
-export default function AnnuaireDetails() {
-  return (
-    <Suspense fallback={<div style={{ padding: '2rem' }}>Chargement des détails...</div>}>
-      <CompanyDetailsContent />
-    </Suspense>
   );
 }
