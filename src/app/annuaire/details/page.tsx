@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Company } from '@/types/company';
 
@@ -12,7 +13,7 @@ const mockCompanies: Company[] = [
     category: 'Technologie',
     revenue: '37 000 000 F CFA',
     location: 'Abidjan - Plateau',
-    email: 'contact@mercurytech.ci'
+    email: 'contact@mercurytech.ci',
   },
   {
     id: '2',
@@ -22,7 +23,7 @@ const mockCompanies: Company[] = [
     category: 'Finance',
     revenue: '15 500 000 F CFA',
     location: 'Abidjan - Cocody',
-    email: 'info@wealthassets.ci'
+    email: 'info@wealthassets.ci',
   },
   {
     id: '3',
@@ -32,7 +33,7 @@ const mockCompanies: Company[] = [
     category: 'Logistique',
     revenue: '22 000 000 F CFA',
     location: 'Bouaké',
-    email: 'contact@maritim-int.ci'
+    email: 'contact@maritim-int.ci',
   },
   {
     id: '4',
@@ -42,11 +43,11 @@ const mockCompanies: Company[] = [
     category: 'Capital-risque',
     revenue: '8 000 000 F CFA',
     location: 'Abidjan - Koumassi',
-    email: 'hello@venturkaptal.ci'
-  }
+    email: 'hello@venturkaptal.ci',
+  },
 ];
 
-export default function AnnuaireDetails() {
+function CompanyDetailsContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
@@ -94,10 +95,7 @@ export default function AnnuaireDetails() {
         </p>
         <p>
           <strong>📧 Email :</strong>{' '}
-          <a
-            href={`mailto:${company.email}`}
-            style={{ color: '#003087' }}
-          >
+          <a href={`mailto:${company.email}`} style={{ color: '#003087' }}>
             {company.email}
           </a>
         </p>
@@ -116,5 +114,13 @@ export default function AnnuaireDetails() {
         📝 Commander une étude
       </button>
     </main>
+  );
+}
+
+export default function AnnuaireDetails() {
+  return (
+    <Suspense fallback={<div style={{ padding: '2rem' }}>Chargement des détails...</div>}>
+      <CompanyDetailsContent />
+    </Suspense>
   );
 }
