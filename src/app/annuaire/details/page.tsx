@@ -1,58 +1,50 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { Company } from '@/types/company';
-
-const mockCompanies: Company[] = [
-  {
-    id: '1',
-    name: 'Mercury Global Tech',
-    rccm: '',
-    description: 'Spécialisée en IA et cybersécurité pour les entreprises d’Afrique de l’Ouest.',
-    category: 'Technologie',
-    revenue: '37 000 000 F CFA',
-    location: 'Abidjan - Plateau',
-    email: 'contact@mercurytech.ci',
-  },
-  {
-    id: '2',
-    name: 'Wealth Assets Inc',
-    rccm: '',
-    description: 'Cabinet de gestion de patrimoine pour les particuliers et entreprises.',
-    category: 'Finance',
-    revenue: '15 500 000 F CFA',
-    location: 'Abidjan - Cocody',
-    email: 'info@wealthassets.ci',
-  },
-  {
-    id: '3',
-    name: 'Maritim International',
-    rccm: '',
-    description: 'Solutions de transport interrégional et services d’import/export.',
-    category: 'Logistique',
-    revenue: '22 000 000 F CFA',
-    location: 'Bouaké',
-    email: 'contact@maritim-int.ci',
-  },
-  {
-    id: '4',
-    name: 'Ventur Kaptal',
-    rccm: '',
-    description: 'Fonds d’investissement dédié aux startups africaines.',
-    category: 'Capital-risque',
-    revenue: '8 000 000 F CFA',
-    location: 'Abidjan - Koumassi',
-    email: 'hello@venturkaptal.ci',
-  },
-];
 
 export default function AnnuaireDetails() {
   const searchParams = useSearchParams();
-  const company = useMemo(() => {
-    const id = searchParams.get('id');
-    return mockCompanies.find((c) => c.id === id);
+  const [company, setCompany] = useState<Company | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      const id = searchParams.get('id');
+      if (!id) return;
+
+      const docRef = doc(db, 'companies', id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setCompany({
+          id,
+          name: data.name,
+          rccm: data.rccm || '',
+          description: data.description,
+          category: data.category,
+          revenue: data.revenue,
+          location: data.location,
+          email: data.email,
+          createdAt: data.createdAt || null,
+        });
+      }
+      setLoading(false);
+    };
+
+    fetchCompany();
   }, [searchParams]);
+
+  if (loading) {
+    return (
+      <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+        <p>Chargement...</p>
+      </main>
+    );
+  }
 
   if (!company) {
     return (
