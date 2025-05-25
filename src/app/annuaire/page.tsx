@@ -1,8 +1,8 @@
+// ✅ src/app/annuaire/page.tsx — version corrigée et fonctionnelle
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   collection,
   getDocs,
@@ -12,22 +12,21 @@ import {
 import { db } from '@/lib/firebase';
 import { Company } from '@/types/company';
 
-export default function AnnuairePage() {
-  const router = useRouter();
-
+export default function Annuaire() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [typeFilter, setTypeFilter] = useState('');
   const [sectorFilter, setSectorFilter] = useState('');
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  /* — chargement Firestore — */
   useEffect(() => {
     (async () => {
       const snap = await getDocs(
         query(collection(db, 'companies'), orderBy('createdAt', 'desc')),
       );
-      setCompanies(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })));
+      setCompanies(
+        snap.docs.map((d) => ({ id: d.id, ...(d.data() as Company) }))
+      );
     })();
   }, []);
 
@@ -35,7 +34,7 @@ export default function AnnuairePage() {
     (c) =>
       (!typeFilter || c.category === typeFilter) &&
       (!sectorFilter || c.location.startsWith(sectorFilter)) &&
-      (!search || c.name.toLowerCase().includes(search.toLowerCase())),
+      (!search || c.name.toLowerCase().includes(search.toLowerCase()))
   );
 
   const resetFilters = () => {
@@ -44,12 +43,13 @@ export default function AnnuairePage() {
     setSearch('');
   };
 
-  const uniqueTypes   = [...new Set(companies.map((c) => c.category))];
-  const uniqueSectors = [...new Set(companies.map((c) => c.location.split(' - ')[0]))];
+  const uniqueTypes = [...new Set(companies.map((c) => c.category))];
+  const uniqueSectors = [
+    ...new Set(companies.map((c) => c.location.split(' - ')[0]))
+  ];
 
   return (
     <div style={{ fontFamily: 'sans-serif' }}>
-      {/* — Header simplifié — */}
       <header
         style={{
           display: 'flex',
@@ -75,8 +75,7 @@ export default function AnnuairePage() {
               borderRadius: '50%',
               display: 'inline-block',
             }}
-          />{' '}
-          Logo
+          />{' '}Logo
         </div>
         <nav style={{ display: 'flex', gap: '1.5rem' }}>
           <Link href="/hub">Accueil</Link>
@@ -87,14 +86,12 @@ export default function AnnuairePage() {
         </nav>
       </header>
 
-      {/* — Contenu — */}
       <main style={{ padding: '2rem' }}>
         <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Annuaire</h1>
         <p style={{ marginBottom: '1.5rem', color: '#555' }}>
           Recherchez des entreprises innovantes et en pleine croissance
         </p>
 
-        {/* Filtres */}
         <div
           style={{
             display: 'flex',
@@ -171,7 +168,6 @@ export default function AnnuairePage() {
           </button>
         </div>
 
-        {/* Affichage */}
         {viewMode === 'grid' ? (
           <div
             style={{
@@ -192,9 +188,7 @@ export default function AnnuairePage() {
                   boxShadow: '0 0 8px rgba(0,0,0,0.05)',
                 }}
               >
-                <h3 style={{ color: '#003087', marginBottom: '0.5rem' }}>
-                  {c.name}
-                </h3>
+                <h3 style={{ color: '#003087', marginBottom: '0.5rem' }}>{c.name}</h3>
                 <div
                   style={{
                     width: '100%',
@@ -267,8 +261,7 @@ export default function AnnuairePage() {
                   <h3 style={{ margin: 0, color: '#003087' }}>{c.name}</h3>
                   <p style={{ margin: '0.5rem 0' }}>{c.description}</p>
                   <p style={{ margin: 0 }}>
-                    📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰{' '}
-                    {c.revenue}
+                    📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰 {c.revenue}
                   </p>
                 </div>
                 <a
