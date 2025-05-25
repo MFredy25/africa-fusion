@@ -1,11 +1,13 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Company } from '@/types/company';
 
-const mockCompanies = [
+const mockCompanies: Company[] = [
   {
     id: '1',
     name: 'Mercury Global Tech',
+    rccm: '',
     description: 'Spécialisée en IA et cybersécurité pour les entreprises d’Afrique de l’Ouest.',
     category: 'Technologie',
     revenue: '37 000 000 F CFA',
@@ -15,6 +17,7 @@ const mockCompanies = [
   {
     id: '2',
     name: 'Wealth Assets Inc',
+    rccm: '',
     description: 'Cabinet de gestion de patrimoine pour les particuliers et entreprises.',
     category: 'Finance',
     revenue: '15 500 000 F CFA',
@@ -24,6 +27,7 @@ const mockCompanies = [
   {
     id: '3',
     name: 'Maritim International',
+    rccm: '',
     description: 'Solutions de transport interrégional et services d’import/export.',
     category: 'Logistique',
     revenue: '22 000 000 F CFA',
@@ -33,6 +37,7 @@ const mockCompanies = [
   {
     id: '4',
     name: 'Ventur Kaptal',
+    rccm: '',
     description: 'Fonds d’investissement dédié aux startups africaines.',
     category: 'Capital-risque',
     revenue: '8 000 000 F CFA',
@@ -63,7 +68,7 @@ export default function AnnuaireDetails() {
 
       <div style={{ background: '#f4f4f4', borderRadius: '8px', padding: '1rem', marginBottom: '2rem' }}>
         <p><strong>📂 Catégorie :</strong> {company.category}</p>
-        <p><strong>💰 Chiffre d'affaires :</strong> {company.revenue}</p>
+        <p><strong>💰 Chiffre d&apos;affaires :</strong> {company.revenue}</p>
         <p><strong>📍 Localisation :</strong> {company.location}</p>
         <p><strong>📧 Email :</strong> <a href={`mailto:${company.email}`} style={{ color: '#003087' }}>{company.email}</a></p>
       </div>

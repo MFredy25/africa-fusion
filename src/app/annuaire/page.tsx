@@ -25,7 +25,11 @@ export default function Annuaire() {
         query(collection(db, 'companies'), orderBy('createdAt', 'desc')),
       );
       setCompanies(
-        snap.docs.map((d) => ({ id: d.id, ...(d.data() as Company) }))
+        snap.docs.map((d) => ({
+          id: d.id,
+          rccm: '', // valeur par défaut vide si absente dans Firestore
+          ...d.data(),
+        } as Company))
       );
     })();
   }, []);
