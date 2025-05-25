@@ -26,9 +26,9 @@ export default function Annuaire() {
       setCompanies(
         snap.docs.map((d) => ({
           id: d.id,
-          rccm: '', // valeur par défaut si manquante
+          rccm: '',
           ...d.data(),
-        } as Company))
+        } as Omit<Company, 'id'> & { id: string }))
       );
     })();
   }, []);
@@ -95,6 +95,7 @@ export default function Annuaire() {
           Recherchez des entreprises innovantes et en pleine croissance
         </p>
 
+        {/* Filtres */}
         <div
           style={{
             display: 'flex',
@@ -171,8 +172,8 @@ export default function Annuaire() {
           </button>
         </div>
 
-        {/* Cartes entreprise – inchangé */}
-        {/* ... */}
+        {/* Cartes entreprise */}
+        {/* (contenu inchangé ici) */}
       </main>
     </div>
   );
