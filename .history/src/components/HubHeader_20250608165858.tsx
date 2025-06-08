@@ -6,14 +6,14 @@ import Image from 'next/image';
 import styles from '../styles/hub.module.css';
 
 export default function HubHeader() {
-  /* Thème clair / sombre */
+  /* ── Détection thème clair/sombre ── */
   const [isDark, setIsDark] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const update = () => setIsDark(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
+    const apply = () => setIsDark(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
   }, []);
 
   const colors = {
@@ -32,6 +32,7 @@ export default function HubHeader() {
         width: '100%',
       }}
     >
+      {/* conteneur 100 % largeur pour repousser la nav à droite */}
       <div
         style={{
           maxWidth: '1200px',
@@ -43,7 +44,7 @@ export default function HubHeader() {
           padding: '0.75rem 1rem',
         }}
       >
-        {/* Logo 100×100 commun */}
+        {/* Logo placé à gauche, sans texte supplémentaire */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
           <Image
             src="/images/fusion_africa.png"
@@ -54,23 +55,35 @@ export default function HubHeader() {
           />
         </Link>
 
-        {/* Navigation */}
+        {/* Liens toujours sur une ligne */}
         <nav
           className={styles.navLinks}
           style={{
             display: 'flex',
             gap: '1rem',
-            whiteSpace: 'nowrap',
             flexWrap: 'nowrap',
+            whiteSpace: 'nowrap',
             color: colors.text,
           }}
         >
-          <Link href="/home" style={{ color: 'inherit' }}>Accueil</Link>
-          <Link href="/services" style={{ color: 'inherit' }}>Nos Services</Link>
-          <Link href="/annuaire" style={{ color: 'inherit' }}>Annuaire</Link>
-          <Link href="/deals-m-a" style={{ color: 'inherit' }}>Deals M&A</Link>
-          <Link href="/crowdfunding" style={{ color: 'inherit' }}>Crowdfunding</Link>
-          <Link href="/connexion" style={{ color: 'inherit' }}>Connexion /</Link>
+          <Link href="/home" style={{ color: 'inherit' }}>
+            Accueil
+          </Link>
+          <Link href="/services" style={{ color: 'inherit' }}>
+            Nos Services
+          </Link>
+          <Link href="/annuaire" style={{ color: 'inherit' }}>
+            Annuaire
+          </Link>
+          <Link href="/deals-m-a" style={{ color: 'inherit' }}>
+            Deals M&A
+          </Link>
+          <Link href="/crowdfunding" style={{ color: 'inherit' }}>
+            Crowdfunding
+          </Link>
+          <Link href="/connexion" style={{ color: 'inherit' }}>
+            Connexion /
+          </Link>
         </nav>
       </div>
     </header>
