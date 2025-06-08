@@ -20,14 +20,8 @@ export default function Annuaire() {
   const [page, setPage] = useState(1);
   const [isDark, setIsDark] = useState(false);
 
-  /* ──────────────
-     Pagination : 5 cartes / ligne × 10 lignes = 50 cartes / page
-  ────────────── */
-  const ITEMS_PER_PAGE = 50;
+  const ITEMS_PER_PAGE = 10;
 
-  /* ──────────────
-     Récupération des entreprises
-  ────────────── */
   useEffect(() => {
     (async () => {
       const snap = await getDocs(
@@ -47,54 +41,47 @@ export default function Annuaire() {
             email: data.email,
             createdAt: data.createdAt || null,
           } as Company;
-        }),
+        })
       );
     })();
   }, []);
 
-  /* ──────────────
-     Détection du thème utilisateur
-  ────────────── */
   useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const apply = () => setIsDark(media.matches);
+    const match = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => setIsDark(match.matches);
     apply();
-    media.addEventListener('change', apply);
-    return () => media.removeEventListener('change', apply);
+    match.addEventListener('change', apply);
+    return () => match.removeEventListener('change', apply);
   }, []);
 
-  /* ──────────────
-     Réinitialisation de la page courante sur changement de filtre / recherche
-  ────────────── */
-  useEffect(() => setPage(1), [typeFilter, sectorFilter, search]);
+  useEffect(() => {
+    setPage(1);
+  }, [typeFilter, sectorFilter, search]);
 
-  /* ──────────────
-     Filtres + Pagination
-  ────────────── */
   const filteredCompanies = companies.filter(
     (c) =>
       (!typeFilter || c.category === typeFilter) &&
       (!sectorFilter || c.location.startsWith(sectorFilter)) &&
-      (!search || c.name.toLowerCase().includes(search.toLowerCase())),
+      (!search || c.name.toLowerCase().includes(search.toLowerCase()))
   );
 
   const pageCount = Math.ceil(filteredCompanies.length / ITEMS_PER_PAGE);
   const paginatedCompanies = filteredCompanies.slice(
     (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
   );
 
-  /* ──────────────
-     Listes uniques pour les filtres
-  ────────────── */
+  const resetFilters = () => {
+    setTypeFilter('');
+    setSectorFilter('');
+    setSearch('');
+  };
+
   const uniqueTypes = [...new Set(companies.map((c) => c.category))];
   const uniqueSectors = [
-    ...new Set(companies.map((c) => c.location.split(' - ')[0])),
+    ...new Set(companies.map((c) => c.location.split(' - ')[0]))
   ];
 
-  /* ──────────────
-     Palette de couleurs (clair / sombre)
-  ────────────── */
   const colors = {
     bg: isDark ? '#1a1a1a' : '#ffffff',
     text: isDark ? '#e0e0e0' : '#333333',
@@ -102,25 +89,8 @@ export default function Annuaire() {
     border: isDark ? '#444' : '#ccc',
   };
 
-  /* ──────────────
-     Reset des filtres
-  ────────────── */
-  const resetFilters = () => {
-    setTypeFilter('');
-    setSectorFilter('');
-    setSearch('');
-  };
-
   return (
-    <div
-      style={{
-        fontFamily: 'sans-serif',
-        background: colors.bg,
-        color: colors.text,
-        minHeight: '100vh',
-      }}
-    >
-      {/* ────── Header ────── */}
+    <div style={{ fontFamily: 'sans-serif', background: colors.bg, minHeight: '100vh', color: colors.text }}>
       <header
         style={{
           display: 'flex',
@@ -128,6 +98,7 @@ export default function Annuaire() {
           alignItems: 'center',
           padding: '1rem 2rem',
           background: colors.bg,
+          color: colors.text,
           borderBottom: `1px solid ${colors.border}`,
         }}
       >
@@ -147,10 +118,8 @@ export default function Annuaire() {
               borderRadius: '50%',
               display: 'inline-block',
             }}
-          />
-          Logo
+          />{' '}Logo
         </div>
-
         <nav style={{ display: 'flex', gap: '1.5rem' }}>
           <Link href="/hub">Accueil</Link>
           <Link href="/annuaire">Annuaire</Link>
@@ -160,16 +129,12 @@ export default function Annuaire() {
         </nav>
       </header>
 
-      {/* ────── Main ────── */}
       <main style={{ padding: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#003087' }}>
-          Annuaire
-        </h1>
-        <p style={{ marginBottom: '1.5rem' }}>
+        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#003087' }}>Annuaire</h1>
+        <p style={{ marginBottom: '1.5rem', color: colors.text }}>
           Recherchez des entreprises innovantes et en pleine croissance
         </p>
 
-        {/* ────── Barre de filtres ────── */}
         <div
           style={{
             display: 'flex',
@@ -184,7 +149,7 @@ export default function Annuaire() {
             onChange={(e) => setTypeFilter(e.target.value)}
             style={{
               padding: '0.5rem',
-              borderRadius: 5,
+              borderRadius: '5px',
               border: `1px solid ${colors.border}`,
               background: colors.bg,
               color: colors.text,
@@ -201,7 +166,7 @@ export default function Annuaire() {
             onChange={(e) => setSectorFilter(e.target.value)}
             style={{
               padding: '0.5rem',
-              borderRadius: 5,
+              borderRadius: '5px',
               border: `1px solid ${colors.border}`,
               background: colors.bg,
               color: colors.text,
@@ -220,33 +185,34 @@ export default function Annuaire() {
             style={{
               padding: '0.5rem',
               border: `1px solid ${colors.border}`,
-              borderRadius: 5,
+              borderRadius: '5px',
               flex: 1,
               minWidth: 180,
               background: colors.bg,
+              color: colors.text,
             }}
           />
-
           <button
             onClick={resetFilters}
             style={{
               padding: '0.5rem 1rem',
               border: `1px solid ${colors.border}`,
-              borderRadius: 5,
+              borderRadius: '5px',
               background: colors.bg,
+              color: colors.text,
               cursor: 'pointer',
             }}
           >
             Réinitialiser mes filtres
           </button>
-
           <button
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
             style={{
               border: `1px solid ${colors.border}`,
-              borderRadius: 5,
+              borderRadius: '5px',
               padding: '0.4rem 0.7rem',
               background: colors.bg,
+              color: colors.text,
               cursor: 'pointer',
             }}
           >
@@ -254,14 +220,13 @@ export default function Annuaire() {
           </button>
         </div>
 
-        {/* ────── Affichage GRID / LIST ────── */}
         {viewMode === 'grid' ? (
-          /* 5 colonnes fixes, gap 1 rem  */
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(5, 1fr)',
+              display: 'flex',
+              flexWrap: 'wrap',
               gap: '1rem',
+              justifyContent: 'space-between',
             }}
           >
             {paginatedCompanies.map((c) => (
@@ -271,19 +236,12 @@ export default function Annuaire() {
                   background: colors.cardBg,
                   borderRadius: 10,
                   padding: '0.6rem',
+                  flex: '0 1 calc(20% - 1rem)',
+                  boxShadow: '0 0 6px rgba(0,0,0,0.05)',
                   border: `1px solid ${colors.border}`,
                 }}
               >
-                <h3
-                  style={{
-                    color: '#003087',
-                    fontSize: '1rem',
-                    marginBottom: '0.4rem',
-                  }}
-                >
-                  {c.name}
-                </h3>
-
+                <h3 style={{ color: '#003087', fontSize: '1rem', marginBottom: '0.4rem' }}>{c.name}</h3>
                 <div
                   style={{
                     width: '100%',
@@ -293,44 +251,14 @@ export default function Annuaire() {
                     marginBottom: '0.8rem',
                   }}
                 />
-
-                <p
-                  style={{
-                    fontSize: '0.8rem',
-                    marginBottom: '0.8rem',
-                    color: colors.text,
-                  }}
-                >
-                  {c.description}
-                </p>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  <span>
-                    📂 <strong>{c.category}</strong>
-                  </span>
+                <p style={{ fontSize: '0.8rem', color: colors.text, marginBottom: '0.8rem' }}>{c.description}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: colors.text }}>
+                  <span>📂 <strong>{c.category}</strong></span>
                   <span>📍 {c.location}</span>
                 </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  <span>
-                    💰 <strong>{c.revenue}</strong>
-                  </span>
-                  <a
-                    href={`mailto:${c.email}`}
-                    style={{ textDecoration: 'none', color: '#003087' }}
-                  >
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: colors.text }}>
+                  <span>💰 <strong>{c.revenue}</strong></span>
+                  <a href={`mailto:${c.email}`} style={{ textDecoration: 'none', color: '#003087' }}>
                     📧 Contact
                   </a>
                 </div>
@@ -338,7 +266,6 @@ export default function Annuaire() {
             ))}
           </div>
         ) : (
-          /* ────────────── Mode LISTE ────────────── */
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {paginatedCompanies.map((c) => (
               <div
@@ -351,22 +278,14 @@ export default function Annuaire() {
                   borderRadius: 8,
                   padding: '0.8rem',
                   background: colors.cardBg,
+                  boxShadow: '0 0 4px rgba(0,0,0,0.05)',
                 }}
               >
                 <div style={{ flex: 1 }}>
                   <h3 style={{ margin: 0, color: '#003087' }}>{c.name}</h3>
-                  <p
-                    style={{
-                      margin: '0.4rem 0',
-                      fontSize: '0.85rem',
-                      color: colors.text,
-                    }}
-                  >
-                    {c.description}
-                  </p>
+                  <p style={{ margin: '0.4rem 0', fontSize: '0.85rem', color: colors.text }}>{c.description}</p>
                   <p style={{ margin: 0, fontSize: '0.8rem', color: colors.text }}>
-                    📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰{' '}
-                    {c.revenue}
+                    📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰 {c.revenue}
                   </p>
                 </div>
                 <a
@@ -385,7 +304,6 @@ export default function Annuaire() {
           </div>
         )}
 
-        {/* ────── Pagination ────── */}
         {pageCount > 1 && (
           <div
             style={{
@@ -404,12 +322,12 @@ export default function Annuaire() {
                 border: `1px solid ${colors.border}`,
                 borderRadius: 4,
                 background: colors.bg,
+                color: colors.text,
                 cursor: page === 1 ? 'default' : 'pointer',
               }}
             >
               ‹
             </button>
-
             {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
@@ -426,7 +344,6 @@ export default function Annuaire() {
                 {n}
               </button>
             ))}
-
             <button
               onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
               disabled={page === pageCount}
@@ -435,6 +352,7 @@ export default function Annuaire() {
                 border: `1px solid ${colors.border}`,
                 borderRadius: 4,
                 background: colors.bg,
+                color: colors.text,
                 cursor: page === pageCount ? 'default' : 'pointer',
               }}
             >

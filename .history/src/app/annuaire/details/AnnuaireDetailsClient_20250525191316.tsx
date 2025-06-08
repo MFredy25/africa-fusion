@@ -10,15 +10,6 @@ export default function AnnuaireDetailsClient() {
   const searchParams = useSearchParams();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const match = window.matchMedia('(prefers-color-scheme: dark)');
-    const apply = () => setIsDark(match.matches);
-    apply();
-    match.addEventListener('change', apply);
-    return () => match.removeEventListener('change', apply);
-  }, []);
 
   useEffect(() => {
     const id = searchParams.get('id');
@@ -52,16 +43,9 @@ export default function AnnuaireDetailsClient() {
     fetchCompany();
   }, [searchParams]);
 
-  const colors = {
-    bg: isDark ? '#1a1a1a' : '#ffffff',
-    cardBg: isDark ? '#2a2a2a' : '#f4f4f4',
-    text: isDark ? '#e0e0e0' : '#444444',
-    border: isDark ? '#444' : '#ddd',
-  };
-
   if (loading) {
     return (
-      <main style={{ padding: '2rem', fontFamily: 'sans-serif', background: colors.bg, color: colors.text, minHeight: '100vh' }}>
+      <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
         <p>Chargement...</p>
       </main>
     );
@@ -69,7 +53,7 @@ export default function AnnuaireDetailsClient() {
 
   if (!company) {
     return (
-      <main style={{ padding: '2rem', fontFamily: 'sans-serif', background: colors.bg, color: colors.text, minHeight: '100vh' }}>
+      <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
         <h1>Entreprise introuvable</h1>
         <p>Aucune entreprise ne correspond à cet identifiant.</p>
       </main>
@@ -83,23 +67,19 @@ export default function AnnuaireDetailsClient() {
         fontFamily: 'sans-serif',
         maxWidth: '800px',
         margin: 'auto',
-        background: colors.bg,
-        color: colors.text,
-        minHeight: '100vh',
       }}
     >
       <h1 style={{ fontSize: '2rem', color: '#003087' }}>{company.name}</h1>
-      <p style={{ margin: '1rem 0', fontSize: '1rem' }}>
+      <p style={{ margin: '1rem 0', fontSize: '1rem', color: '#444' }}>
         {company.description}
       </p>
 
       <div
         style={{
-          background: colors.cardBg,
+          background: '#f4f4f4',
           borderRadius: '8px',
           padding: '1rem',
           marginBottom: '2rem',
-          border: `1px solid ${colors.border}`,
         }}
       >
         <p>
