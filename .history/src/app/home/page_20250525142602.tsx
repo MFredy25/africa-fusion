@@ -1,5 +1,3 @@
-//Premier deployement
-
 import styles from "../../styles/hub.module.css";
 import Link from "next/link";
 import HubHeader from "../../components/HubHeader";
