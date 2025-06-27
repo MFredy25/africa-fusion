@@ -1,9 +1,16 @@
-// app/annuaire/page.tsx — Annuaire (version sans suppression)
+// app/annuaire/page.tsx — Annuaire (mise à jour finale)
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Company } from '@/types/company';
 
@@ -16,6 +23,8 @@ export default function Annuaire() {
   const [page, setPage] = useState(1);
   const [isDark, setIsDark] = useState(false);
   const [columns, setColumns] = useState(5); // 5 desktop, 3 mobile
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showBulkPopup, setShowBulkPopup] = useState(false);
 
   /* ── Thème + responsive ── */
   useEffect(() => {
@@ -52,13 +61,51 @@ export default function Annuaire() {
             revenue: data.revenue,
             location: data.location,
             email: data.email,
-            logo: data.logo || '',          // ← récupère le logo
             createdAt: data.createdAt || null,
           } as Company;
         }),
       );
     })();
   }, []);
+
+  /* ── Suppression simple ── */
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette entreprise ?')) {
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, 'companies', id));
+      setCompanies((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      alert('Erreur lors de la suppression.');
+    }
+  };
+
+  /* ── Suppression multiple ── */
+  const handleBulkSuppr = async () => {
+    if (
+      !window.confirm(
+        'Voulez-vous vraiment supprimer toutes les entreprises sélectionnées ?',
+      )
+    ) {
+      return;
+    }
+    try {
+      await Promise.all(
+        selectedIds.map((id) => deleteDoc(doc(db, 'companies', id))),
+      );
+      setCompanies((prev) => prev.filter((c) => !selectedIds.includes(c.id!)));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      alert('Erreur lors de la suppression.');
+    } finally {
+      setShowBulkPopup(false);
+      setSelectedIds([]);
+    }
+  };
 
   /* ── Pagination ── */
   const ITEMS_PER_PAGE = columns * 10; // 50 desktop / 30 mobile
@@ -95,6 +142,13 @@ export default function Annuaire() {
     setTypeFilter('');
     setSectorFilter('');
     setSearch('');
+  };
+
+  /* ── Sélectionner toutes les entreprises de la page ── */
+  const handleSelectAll = () => {
+    // c.id! : non-null assertion (chaque document Firestore a toujours un id string)
+    setSelectedIds(paginatedCompanies.map((c) => c.id!).filter(Boolean) as string[]);
+    setShowBulkPopup(true);
   };
 
   /* ────────── RENDER ────────── */
@@ -267,6 +321,22 @@ export default function Annuaire() {
           >
             {viewMode === 'grid' ? '📃' : '🔲'}
           </button>
+
+          {/* Sélectionner toutes les entreprises affichées */}
+          <button
+            onClick={handleSelectAll}
+            style={{
+              border: `1px solid ${colors.border}`,
+              borderRadius: 5,
+              padding: '0.4rem 0.7rem',
+              background: colors.bg,
+              color: colors.text,
+              cursor: 'pointer',
+            }}
+            title="Sélectionner tout & supprimer"
+          >
+            🗑️
+          </button>
         </div>
 
         {/* Cartes / liste */}
@@ -279,11 +349,6 @@ export default function Annuaire() {
             }}
           >
             {paginatedCompanies.map((c) => {
-              const logoSrc =
-                c.logo && c.logo.trim() !== ''
-                  ? c.logo
-                  : '/assets/images/entreprise.png';
-
               const base = {
                 background: colors.cardBg,
                 borderRadius: 10,
@@ -307,6 +372,24 @@ export default function Annuaire() {
                       : base
                   }
                 >
+                  {/* Icône corbeille */}
+                  <button
+                    onClick={() => handleDelete(c.id!)}
+                    style={{
+                      position: 'absolute',
+                      top: 6,
+                      right: 6,
+                      background: 'transparent',
+                      border: 'none',
+                      fontSize: '1rem',
+                      cursor: 'pointer',
+                      color: '#c00',
+                    }}
+                    title="Supprimer"
+                  >
+                    🗑️
+                  </button>
+
                   <h3
                     style={{
                       color: '#003087',
@@ -317,19 +400,13 @@ export default function Annuaire() {
                     {c.name}
                   </h3>
 
-                  {/* Logo */}
-                  <img
-                    src={logoSrc}
-                    alt="logo"
+                  <div
                     style={{
                       width: '100%',
                       height: isMobile ? '40%' : 120,
-                      objectFit: 'cover',      // ← rempli tout le cadre
-                      objectPosition: 'center',
                       background: colors.border,
                       borderRadius: 6,
                       marginBottom: '0.8rem',
-                      display: 'block',
                     }}
                   />
 
@@ -379,87 +456,67 @@ export default function Annuaire() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {paginatedCompanies.map((c) => {
-              const logoSrc =
-                c.logo && c.logo.trim() !== ''
-                  ? c.logo
-                  : '/assets/images/entreprise.png';
-
-              return (
-                <div
-                  key={c.id}
+            {paginatedCompanies.map((c) => (
+              <div
+                key={c.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: 8,
+                  padding: '0.8rem',
+                  background: colors.cardBg,
+                  position: 'relative',
+                }}
+              >
+                {/* Icône corbeille */}
+                <button
+                  onClick={() => handleDelete(c.id!)}
                   style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: 8,
-                    padding: '0.8rem',
-                    background: colors.cardBg,
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                    background: 'transparent',
+                    border: 'none',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    color: '#c00',
+                  }}
+                  title="Supprimer"
+                >
+                  🗑️
+                </button>
+
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ margin: 0, color: '#003087' }}>{c.name}</h3>
+                  <p
+                    style={{
+                      margin: '0.4rem 0',
+                      fontSize: '0.85rem',
+                      color: colors.text,
+                    }}
+                  >
+                    {c.description}
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: colors.text }}>
+                    📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰{' '}
+                    {c.revenue}
+                  </p>
+                </div>
+                <a
+                  href={`mailto:${c.email}`}
+                  style={{
+                    textDecoration: 'none',
+                    color: '#003087',
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  {/* Logo + détails */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1rem',
-                      flex: 1,
-                    }}
-                  >
-                    <img
-                      src={logoSrc}
-                      alt="logo"
-                      style={{
-                        width: 40,
-                        height: 40,
-                        objectFit: 'cover',   // ← rempli tout le cadre
-                        objectPosition: 'center',
-                        border: `1px solid ${colors.border}`,
-                        borderRadius: 6,
-                        background: colors.border,
-                        display: 'block',
-                      }}
-                    />
-
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ margin: 0, color: '#003087' }}>{c.name}</h3>
-                      <p
-                        style={{
-                          margin: '0.4rem 0',
-                          fontSize: '0.85rem',
-                          color: colors.text,
-                        }}
-                      >
-                        {c.description}
-                      </p>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: '0.8rem',
-                          color: colors.text,
-                        }}
-                      >
-                        📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰{' '}
-                        {c.revenue}
-                      </p>
-                    </div>
-                  </div>
-
-                  <a
-                    href={`mailto:${c.email}`}
-                    style={{
-                      textDecoration: 'none',
-                      color: '#003087',
-                      fontWeight: 'bold',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    📧 Contact
-                  </a>
-                </div>
-              );
-            })}
+                  📧 Contact
+                </a>
+              </div>
+            ))}
           </div>
         )}
       </main>
@@ -522,6 +579,73 @@ export default function Annuaire() {
           >
             ›
           </button>
+        </div>
+      )}
+
+      {/* ── Popup suppression multiple ── */}
+      {showBulkPopup && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              background: colors.cardBg,
+              border: `1px solid ${colors.border}`,
+              padding: '2rem',
+              borderRadius: 8,
+              maxWidth: 320,
+              width: '100%',
+              color: colors.text,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
+            <p style={{ margin: 0, textAlign: 'center' }}>
+              Supprimer les {selectedIds.length} entreprises sélectionnées ?
+            </p>
+            <div
+              style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}
+            >
+              <button
+                onClick={() => {
+                  setShowBulkPopup(false);
+                  setSelectedIds([]);
+                }}
+                style={{
+                  padding: '0.4rem 1rem',
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: 4,
+                  background: colors.bg,
+                  color: colors.text,
+                  cursor: 'pointer',
+                }}
+              >
+                Retour
+              </button>
+              <button
+                onClick={handleBulkSuppr}
+                style={{
+                  padding: '0.4rem 1rem',
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: 4,
+                  background: '#c00',
+                  color: '#fff',
+                  cursor: 'pointer',
+                }}
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

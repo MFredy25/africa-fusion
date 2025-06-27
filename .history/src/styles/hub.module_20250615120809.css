@@ -38,9 +38,9 @@
 
 /* ───────────── CONTAINER WRAPPER ───────────── */
 .containerWrapper {
-  width: 100%;          /* ← pleine largeur */
-  margin: 1.5rem 0;     /* marge verticale, plus d’auto-centre */
-  padding: 3rem 30px;   /* padding horizontal 30 px */
+  max-width: 1300px;
+  margin: 1.5rem auto; /* ↓ Espacement réduit ici */
+  padding: 3rem 2.5rem;
   background: #f3f4f6;
   border-radius: 20px;
   box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
@@ -202,8 +202,8 @@
   color: #000000;
 }
 
-/* ───────────── PAGE WRAPPER ───────────── */
 .pageWrapper {
   padding: 0 30px;
   width: 100%;
 }
+

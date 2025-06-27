@@ -1,9 +1,15 @@
-// app/annuaire/page.tsx — Annuaire (version sans suppression)
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Company } from '@/types/company';
 
@@ -16,6 +22,11 @@ export default function Annuaire() {
   const [page, setPage] = useState(1);
   const [isDark, setIsDark] = useState(false);
   const [columns, setColumns] = useState(5); // 5 desktop, 3 mobile
+
+  /* ── Modal ── */
+  const [modal, setModal] = useState<null | { ids: string[]; bulk: boolean }>(
+    null,
+  );
 
   /* ── Thème + responsive ── */
   useEffect(() => {
@@ -52,13 +63,19 @@ export default function Annuaire() {
             revenue: data.revenue,
             location: data.location,
             email: data.email,
-            logo: data.logo || '',          // ← récupère le logo
             createdAt: data.createdAt || null,
           } as Company;
         }),
       );
     })();
   }, []);
+
+  /* ── Suppression ── */
+  const deleteIds = async (ids: string[]) => {
+    await Promise.all(ids.map((id) => deleteDoc(doc(db, 'companies', id))));
+    setCompanies((prev) => prev.filter((c) => !ids.includes(c.id)));
+    setModal(null);
+  };
 
   /* ── Pagination ── */
   const ITEMS_PER_PAGE = columns * 10; // 50 desktop / 30 mobile
@@ -174,7 +191,9 @@ export default function Annuaire() {
           width: '100%',
         }}
       >
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#003087' }}>
+        <h1
+          style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#003087' }}
+        >
           Annuaire
         </h1>
         <p style={{ marginBottom: '1.5rem' }}>
@@ -267,6 +286,28 @@ export default function Annuaire() {
           >
             {viewMode === 'grid' ? '📃' : '🔲'}
           </button>
+
+          {/* ── Icône suppression de masse ── */}
+          <button
+            onClick={() =>
+              paginatedCompanies.length &&
+              setModal({
+                ids: paginatedCompanies.map((c) => c.id),
+                bulk: true,
+              })
+            }
+            style={{
+              border: `1px solid ${colors.border}`,
+              borderRadius: 5,
+              padding: '0.4rem 0.7rem',
+              background: colors.bg,
+              color: colors.text,
+              cursor: 'pointer',
+            }}
+            title="Sélectionner tout et supprimer"
+          >
+            🗑️
+          </button>
         </div>
 
         {/* Cartes / liste */}
@@ -279,11 +320,6 @@ export default function Annuaire() {
             }}
           >
             {paginatedCompanies.map((c) => {
-              const logoSrc =
-                c.logo && c.logo.trim() !== ''
-                  ? c.logo
-                  : '/assets/images/entreprise.png';
-
               const base = {
                 background: colors.cardBg,
                 borderRadius: 10,
@@ -307,6 +343,30 @@ export default function Annuaire() {
                       : base
                   }
                 >
+                  {/* ── Corbeille individuelle ── */}
+                  <button
+                    onClick={() =>
+                      setModal({
+                        ids: [c.id],
+                        bulk: false,
+                      })
+                    }
+                    style={{
+                      position: 'absolute',
+                      top: 4,
+                      right: 4,
+                      border: 'none',
+                      background: 'transparent',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      lineHeight: 1,
+                      color: colors.text,
+                    }}
+                    title="Supprimer"
+                  >
+                    🗑️
+                  </button>
+
                   <h3
                     style={{
                       color: '#003087',
@@ -317,19 +377,13 @@ export default function Annuaire() {
                     {c.name}
                   </h3>
 
-                  {/* Logo */}
-                  <img
-                    src={logoSrc}
-                    alt="logo"
+                  <div
                     style={{
                       width: '100%',
                       height: isMobile ? '40%' : 120,
-                      objectFit: 'cover',      // ← rempli tout le cadre
-                      objectPosition: 'center',
                       background: colors.border,
                       borderRadius: 6,
                       marginBottom: '0.8rem',
-                      display: 'block',
                     }}
                   />
 
@@ -379,87 +433,75 @@ export default function Annuaire() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {paginatedCompanies.map((c) => {
-              const logoSrc =
-                c.logo && c.logo.trim() !== ''
-                  ? c.logo
-                  : '/assets/images/entreprise.png';
-
-              return (
-                <div
-                  key={c.id}
+            {paginatedCompanies.map((c) => (
+              <div
+                key={c.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: 8,
+                  padding: '0.8rem',
+                  background: colors.cardBg,
+                  position: 'relative',
+                }}
+              >
+                {/* ── Corbeille individuelle ── */}
+                <button
+                  onClick={() =>
+                    setModal({
+                      ids: [c.id],
+                      bulk: false,
+                    })
+                  }
                   style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: 8,
-                    padding: '0.8rem',
-                    background: colors.cardBg,
+                    position: 'absolute',
+                    top: 4,
+                    right: 4,
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    lineHeight: 1,
+                    color: colors.text,
+                  }}
+                  title="Supprimer"
+                >
+                  🗑️
+                </button>
+
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ margin: 0, color: '#003087' }}>{c.name}</h3>
+                  <p
+                    style={{
+                      margin: '0.4rem 0',
+                      fontSize: '0.85rem',
+                      color: colors.text,
+                    }}
+                  >
+                    {c.description}
+                  </p>
+                  <p
+                    style={{ margin: 0, fontSize: '0.8rem', color: colors.text }}
+                  >
+                    📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰{' '}
+                    {c.revenue}
+                  </p>
+                </div>
+                <a
+                  href={`mailto:${c.email}`}
+                  style={{
+                    textDecoration: 'none',
+                    color: '#003087',
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  {/* Logo + détails */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1rem',
-                      flex: 1,
-                    }}
-                  >
-                    <img
-                      src={logoSrc}
-                      alt="logo"
-                      style={{
-                        width: 40,
-                        height: 40,
-                        objectFit: 'cover',   // ← rempli tout le cadre
-                        objectPosition: 'center',
-                        border: `1px solid ${colors.border}`,
-                        borderRadius: 6,
-                        background: colors.border,
-                        display: 'block',
-                      }}
-                    />
-
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ margin: 0, color: '#003087' }}>{c.name}</h3>
-                      <p
-                        style={{
-                          margin: '0.4rem 0',
-                          fontSize: '0.85rem',
-                          color: colors.text,
-                        }}
-                      >
-                        {c.description}
-                      </p>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: '0.8rem',
-                          color: colors.text,
-                        }}
-                      >
-                        📂 <strong>{c.category}</strong> · 📍 {c.location} · 💰{' '}
-                        {c.revenue}
-                      </p>
-                    </div>
-                  </div>
-
-                  <a
-                    href={`mailto:${c.email}`}
-                    style={{
-                      textDecoration: 'none',
-                      color: '#003087',
-                      fontWeight: 'bold',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    📧 Contact
-                  </a>
-                </div>
-              );
-            })}
+                  📧 Contact
+                </a>
+              </div>
+            ))}
           </div>
         )}
       </main>
@@ -522,6 +564,71 @@ export default function Annuaire() {
           >
             ›
           </button>
+        </div>
+      )}
+
+      {/* ── Modal confirmation ── */}
+      {modal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: colors.bg,
+              color: colors.text,
+              padding: '2rem',
+              borderRadius: 8,
+              border: `1px solid ${colors.border}`,
+              minWidth: 280,
+            }}
+          >
+            <p style={{ marginBottom: '1rem' }}>
+              {modal.bulk
+                ? 'Voulez-vous supprimer toutes les entreprises sélectionnées ?'
+                : 'Voulez-vous supprimer cette entreprise ?'}
+            </p>
+            <div
+              style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}
+            >
+              <button
+                onClick={() => setModal(null)}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: 4,
+                  border: `1px solid ${colors.border}`,
+                  background: colors.bg,
+                  color: colors.text,
+                  cursor: 'pointer',
+                }}
+              >
+                Retour
+              </button>
+              <button
+                onClick={() => deleteIds(modal.ids)}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: 4,
+                  border: `1px solid ${colors.border}`,
+                  background: '#d9534f',
+                  color: '#fff',
+                  cursor: 'pointer',
+                }}
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

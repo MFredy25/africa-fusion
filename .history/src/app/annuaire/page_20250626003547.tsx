@@ -324,12 +324,10 @@ export default function Annuaire() {
                     style={{
                       width: '100%',
                       height: isMobile ? '40%' : 120,
-                      objectFit: 'cover',      // ← rempli tout le cadre
-                      objectPosition: 'center',
+                      objectFit: 'contain',
                       background: colors.border,
                       borderRadius: 6,
                       marginBottom: '0.8rem',
-                      display: 'block',
                     }}
                   />
 
@@ -413,12 +411,10 @@ export default function Annuaire() {
                       style={{
                         width: 40,
                         height: 40,
-                        objectFit: 'cover',   // ← rempli tout le cadre
-                        objectPosition: 'center',
+                        objectFit: 'contain',
                         border: `1px solid ${colors.border}`,
                         borderRadius: 6,
                         background: colors.border,
-                        display: 'block',
                       }}
                     />
 
